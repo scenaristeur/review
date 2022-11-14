@@ -87,7 +87,7 @@ export default {
         {term: "Rating", uri:	"http://purl.org/stuff/rev#rating", description: "A numeric value", display: true, fr: "en français", type: "rating"},
         // {term: "TotalVotes", uri:	"http://purl.org/stuff/rev#totalVotes", description: "Number of usefulness votes (integer)", display: true, fr: "en français", type: "textarea"},
       ],
-      review:{"rdfs:type": "http://purl.org/stuff/rev#Review"}
+      review:{"rdf:type": "http://purl.org/stuff/rev#Review"}
     }
   },
   created(){
@@ -103,7 +103,10 @@ export default {
       this.review["http://purl.org/stuff/rev#title"] = this.$route.query.title
     },
     postReview(){
+      this.review["http://purl.org/stuff/rev#reviewer"] = this.session.webId
       console.log(this.review)
+      this.$postReview(this.review)
+
     }
   },
   computed:{

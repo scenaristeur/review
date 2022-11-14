@@ -20,12 +20,12 @@ import {
   //removeStringNoLocale,
   //deleteContainer,
   //addStringNoLocale,
-  //setThing,
-  //saveSolidDatasetAt,
-  //createSolidDataset,
-  //createThing,
+  setThing,
+  saveSolidDatasetAt,
+  createSolidDataset,
+  createThing,
   //addUrl,
-  //buildThing,
+  buildThing,
   //overwriteFile,
   getStringNoLocale,
   getThing,
@@ -41,8 +41,9 @@ import {
   //getInteger,
   // setDatetime
 } from "@inrupt/solid-client";
-import { FOAF, /*LDP,*/ VCARD, /*RDF,*/ AS, /*RDFS, OWL*/  } from "@inrupt/vocab-common-rdf";
+import { FOAF, /*LDP,*/ VCARD, RDF, AS, /*RDFS, OWL*/  } from "@inrupt/vocab-common-rdf";
 import { WS, SOLID } from "@inrupt/vocab-solid-common";
+import { v4 as uuidv4 } from 'uuid';
 
 import * as sc from '@inrupt/solid-client-authn-browser'
 const LOCAL_STORAGE_KEY__SOLID_SESSION_RESTORE_URL = "solid_session_restore_url"
@@ -220,6 +221,37 @@ const plugin = {
       }
       console.log(pod)
       return await pod
+    }
+
+    Vue.prototype.$postReview = async function(r){
+      console.log(r)
+      console.log(store.state.solid.pod.storage)
+      let id = uuidv4()
+      const reviewUrl = store.state.solid.pod.storage+'public/reviews/'+id+'.ttl';
+      console.log(reviewUrl)
+      let reviewSolidDataset = createSolidDataset();
+      const newReview = buildThing(createThing({ name: id }))
+      //.addStringNoLocale(SCHEMA_INRUPT.name, "ABC123 of Example Literature")
+      .addUrl(RDF.type, r['rdf:type'])
+      .addUrl("http://purl.org/stuff/rev#Performer", r["http://purl.org/stuff/rev#Performer"])
+      .addUrl("http://purl.org/stuff/rev#Intermediary", r["http://purl.org/stuff/rev#Intermediary"])
+      .addStringNoLocale("http://purl.org/stuff/rev#type", r["http://purl.org/stuff/rev#type"])
+      .addStringNoLocale("http://purl.org/stuff/rev#title", r["http://purl.org/stuff/rev#title"])
+      .addUrl("http://purl.org/stuff/rev#reviewer", r["http://purl.org/stuff/rev#reviewer"])
+      .addInteger("http://purl.org/stuff/rev#rating", r["http://purl.org/stuff/rev#rating"])
+      .addStringNoLocale("http://purl.org/stuff/rev#text", r["http://purl.org/stuff/rev#text"])
+      .build();
+
+      reviewSolidDataset = setThing(reviewSolidDataset, newReview);
+      const savedSolidDataset = await saveSolidDatasetAt(
+        reviewUrl,
+        reviewSolidDataset,
+        { fetch: sc.fetch }             // fetch from authenticated Session
+      );
+      console.log(savedSolidDataset)
+      alert( 'your review has been saved at '+savedSolidDataset.internal_resourceInfo.sourceIri)
+
+
     }
 
     // async function getLink(url){

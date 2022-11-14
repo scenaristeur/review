@@ -1,5 +1,10 @@
 # review
 
+Assuming a 'Marketplace A', the intermediary with a solid webId 'https://spoggy-test6.solidcommunity.net' asking a user to post a review about preformer 'https://spoggy-test5.solidcommunity.net' about the work 'The title of work' of type 'TheWorkType'
+
+
+
+
 test with
 
 - http://127.0.0.1:8080/?performer=australopithek&intermediary=Name_or_id_of_the_platform&type=TheWorkType&title=The%20title%20of%20the%20work
